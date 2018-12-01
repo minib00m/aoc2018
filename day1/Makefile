@@ -1,10 +1,8 @@
-OBJECTS = solution.o
+TARGETS = solution_part1
 
-main: $(OBJECTS)
-	gcc -std=c99 -static -o main $(OBJECTS)
-
-%.o: %.asm
-	nasm -f elf64 $<
+$(TARGETS):
+	nasm -f elf64 $@.asm
+	gcc -std=c99 -static -o $@ $@.o
 
 clean:
-	rm -f $(OBJECTS) main
+	rm -f $(TARGETS).o $(TARGETS)
