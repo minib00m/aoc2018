@@ -1,4 +1,5 @@
 global main
+%include '../utils/double_buffer.asm'
 
 extern scanf
 extern printf
@@ -39,13 +40,6 @@ is_element_in_frequencies_buffer: ; element to search in list
 .no_such_element:
     xor     rax, rax
     ret
-
-double_buffer: ; ptr to buffer, ptr to size to double
-    mov     r8, qword [rsi]
-    add     r8, r8
-    mov     qword [rsi], r8
-    imul    rsi, r8, 8 ; each element has 8 bytes
-    jmp     realloc
 
 process_input_buffer:
     push    rbp
