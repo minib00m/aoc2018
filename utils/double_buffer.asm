@@ -1,3 +1,5 @@
+extern realloc
+
 double_buffer: ; ptr to buffer, ptr to size to double
     mov     r8, qword [rsi]
     add     r8, r8
