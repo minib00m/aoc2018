@@ -14,7 +14,7 @@ section .text
 main:
     push    rbp
     mov     rbp, rsp
-    sub     rsp, 32 ; int64 for input, int64 for result, stack alignment
+    sub     rsp, 16 ; int64 for input, int64 for result
     mov     qword [rbp - 16], 0
 
 .read_more:
@@ -36,7 +36,7 @@ main:
     mov     al, 0
     call    printf
 
-    add     rsp, 32
+    add     rsp, 16
     pop     rbp
     mov     rax, 0
     ret
