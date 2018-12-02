@@ -13,9 +13,9 @@ input_buffer: dq 0
 input_buffer_size: dq 8
 input_buffer_position: dq 0
 
-buf: dq 0
-buf_size: dq 8
-buf_position: dq 0
+frequency_buffer: dq 0
+frequency_buffer_size: dq 8
+frequency_buffer_position: dq 0
 
 input_int64_format: db "%ld", 0
 output_int64_format: db "%ld", 10, 0
@@ -26,9 +26,9 @@ is_element_in_frequencies_buffer: ; element to search in list
     mov     rcx, 0 ; index
 
 .check_next_element:
-    cmp     rcx, [buf_position] ; check if not out of bounds
+    cmp     rcx, [frequency_buffer_position] ; check if not out of bounds
     jge     .no_such_element
-    mov     rdx, [buf]
+    mov     rdx, [frequency_buffer]
     mov     r8, [rdx + rcx * 8] ; getting element
     inc     rcx
     cmp     r8, rdi
@@ -54,9 +54,9 @@ process_input_buffer:
     push    r13 ; current sum of frequencies
 
     ; add 0 to initial frequencies buffer
-    mov     rax, [buf]
+    mov     rax, [frequency_buffer]
     mov     qword [rax], 0
-    inc     qword [buf_position]
+    inc     qword [frequency_buffer_position]
 
     xor     r12, r12
     xor     r13, r13
@@ -74,21 +74,21 @@ process_input_buffer:
     jne     .doubled_frequency_found
 
     ; sum frequency not found, add it to frequencies buffer
-    mov     rax, [buf_size]
-    cmp     [buf_position], rax
+    mov     rax, [frequency_buffer_size]
+    cmp     [frequency_buffer_position], rax
     jl      .put_element_to_frequencies_buffer
 
     ; realloc frequencies buffer
-    mov     rdi, [buf]
-    mov     rsi, buf_size
+    mov     rdi, [frequency_buffer]
+    mov     rsi, frequency_buffer_size
     call    double_buffer
-    mov     [buf], rax
+    mov     [frequency_buffer], rax
 
 .put_element_to_frequencies_buffer:
-    mov     rax, [buf_position]
-    mov     rcx, [buf]
+    mov     rax, [frequency_buffer_position]
+    mov     rcx, [frequency_buffer]
     lea     r8, [rcx + rax * 8]
-    inc     qword [buf_position]
+    inc     qword [frequency_buffer_position]
     mov     [r8], r13
     jmp     .process_element_in_input_buffer
 
@@ -106,10 +106,10 @@ main:
     sub     rsp, 16 ; int64 for input, stack alignment
 
     ; initialize frequencies buffer
-    mov     rdi, qword [buf]
-    mov     rsi, buf_size
+    mov     rdi, qword [frequency_buffer]
+    mov     rsi, frequency_buffer_size
     call    double_buffer
-    mov     qword [buf], rax
+    mov     qword [frequency_buffer], rax
 
     ; initialize input_buffer
     mov     rdi, qword [input_buffer]
@@ -152,7 +152,7 @@ main:
      call   printf
 
 .free_buffer:
-    mov     rdi, [buf]
+    mov     rdi, [frequency_buffer]
     call    free
     mov     rdi, [input_buffer]
     call    free
