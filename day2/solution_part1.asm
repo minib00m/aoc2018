@@ -48,7 +48,6 @@ main:
     xor     r8, r8 ; for marking if any letter repeated 2 times
     xor     r9, r9 ; for marking if any letter repeated 3 times
 .check_next_letter:
-    ; if out of bounds element, add r8 to r12 and r9 to r13
     cmp     rcx, rdx
     je      .summarize_word
 
