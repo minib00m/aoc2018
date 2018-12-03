@@ -7,3 +7,4 @@ set(CMAKE_C_FLAGS "-std=c99 -no-pie -fsanitize=address -fno-omit-frame-pointer")
 set(CMAKE_NASM_LINK_EXECUTABLE "gcc -g ${CMAKE_C_FLAGS} -o <TARGET> <OBJECTS>")
 
 add_subdirectory(day1)
+add_subdirectory(day2)
