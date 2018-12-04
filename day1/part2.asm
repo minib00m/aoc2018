@@ -1,5 +1,5 @@
 global main
-%include 'utils/double_buffer.asm'
+%include 'utils/double_buffer_sizeof.asm'
 
 extern scanf
 extern printf
@@ -73,10 +73,7 @@ process_input_buffer:
     jl      .put_element_to_frequencies_buffer
 
     ; realloc frequencies buffer
-    mov     rdi, [frequency_buffer]
-    mov     rsi, frequency_buffer_size
-    call    double_buffer
-    mov     [frequency_buffer], rax
+    double_buffer_sizeof [frequency_buffer], frequency_buffer_size, 8
 
 .put_element_to_frequencies_buffer:
     mov     rax, [frequency_buffer_position]
@@ -100,16 +97,10 @@ main:
     sub     rsp, 16 ; int64 for input, stack alignment
 
     ; initialize frequencies buffer
-    mov     rdi, qword [frequency_buffer]
-    mov     rsi, frequency_buffer_size
-    call    double_buffer
-    mov     qword [frequency_buffer], rax
+    double_buffer_sizeof [frequency_buffer], frequency_buffer_size, 8
 
     ; initialize input_buffer
-    mov     rdi, qword [input_buffer]
-    mov     rsi, input_buffer_size
-    call    double_buffer
-    mov     qword [input_buffer], rax
+    double_buffer_sizeof [input_buffer], input_buffer_size, 8
 
 .read_more:
     mov     rdi, input_int64_format
@@ -124,10 +115,7 @@ main:
     jl     .put_element_into_buffer
 
     ; relocating buffer
-    mov     rdi, [input_buffer]
-    mov     rsi, input_buffer_size
-    call    double_buffer
-    mov     qword [input_buffer], rax
+    double_buffer_sizeof [input_buffer], input_buffer_size, 8
 
 .put_element_into_buffer:
     mov     r8, [rbp - 8] ; element to add
