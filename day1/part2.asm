@@ -1,5 +1,6 @@
 global main
 %include 'utils/double_buffer_sizeof.asm'
+%include 'utils/buffer.asm'
 
 extern scanf
 extern printf
@@ -10,12 +11,16 @@ extern realloc
 EOF equ -1
 
 section .data
-input_buffer: dq 0
-input_buffer_size: dq 8
+input_buffer istruc buffer
+    at buffer.ptr, dq 0
+    at buffer.size, dq 8
+iend
 input_buffer_position: dq 0
 
-frequency_buffer: dq 0
-frequency_buffer_size: dq 8
+frequency_buffer istruc buffer
+    at buffer.ptr, dq 0
+    at buffer.size, dq 8
+iend
 frequency_buffer_position: dq 0
 
 input_int64_format: db "%ld", 0
@@ -29,7 +34,7 @@ is_element_in_frequencies_buffer: ; element to search in list
 .check_next_element:
     cmp     rcx, [frequency_buffer_position] ; check if not out of bounds
     jge     .no_such_element
-    mov     rdx, [frequency_buffer]
+    mov     rdx, [BUFPTR(frequency_buffer)]
     mov     r8, [rdx + rcx * 8] ; getting element
     inc     rcx
     cmp     r8, rdi
@@ -48,7 +53,7 @@ process_input_buffer:
     push    r13 ; current sum of frequencies
 
     ; add 0 to initial frequencies buffer
-    mov     rax, [frequency_buffer]
+    mov     rax, [BUFPTR(frequency_buffer)]
     mov     qword [rax], 0
     inc     qword [frequency_buffer_position]
 
@@ -59,7 +64,7 @@ process_input_buffer:
     cmp     [input_buffer_position], r12
     cmovle  r12, rax ; zero our index if it's too high
 
-    mov     rax, [input_buffer]
+    mov     rax, [BUFPTR(input_buffer)]
     add     r13, [rax + r12 * 8] ; add next element to our sum
     inc     r12
     mov     rdi, r13
@@ -68,16 +73,16 @@ process_input_buffer:
     jne     .doubled_frequency_found
 
     ; sum frequency not found, add it to frequencies buffer
-    mov     rax, [frequency_buffer_size]
+    mov     rax, [BUFSIZE(frequency_buffer)]
     cmp     [frequency_buffer_position], rax
     jl      .put_element_to_frequencies_buffer
 
     ; realloc frequencies buffer
-    double_buffer_sizeof [frequency_buffer], frequency_buffer_size, 8
+    double_buffer_sizeof [BUFPTR(frequency_buffer)], BUFSIZE(frequency_buffer), 8
 
 .put_element_to_frequencies_buffer:
     mov     rax, [frequency_buffer_position]
-    mov     rcx, [frequency_buffer]
+    mov     rcx, [BUFPTR(frequency_buffer)]
     lea     r8, [rcx + rax * 8]
     inc     qword [frequency_buffer_position]
     mov     [r8], r13
@@ -97,10 +102,10 @@ main:
     sub     rsp, 16 ; int64 for input, stack alignment
 
     ; initialize frequencies buffer
-    double_buffer_sizeof [frequency_buffer], frequency_buffer_size, 8
+    double_buffer_sizeof [BUFPTR(frequency_buffer)], BUFSIZE(frequency_buffer), 8
 
     ; initialize input_buffer
-    double_buffer_sizeof [input_buffer], input_buffer_size, 8
+    double_buffer_sizeof [BUFPTR(input_buffer)], BUFSIZE(input_buffer), 8
 
 .read_more:
     mov     rdi, input_int64_format
@@ -110,17 +115,17 @@ main:
     cmp     eax, EOF
     je      .process_input_buffer
 
-    mov     r8, [input_buffer_size]
+    mov     r8, [BUFSIZE(input_buffer)]
     cmp     [input_buffer_position], r8
     jl     .put_element_into_buffer
 
     ; relocating buffer
-    double_buffer_sizeof [input_buffer], input_buffer_size, 8
+    double_buffer_sizeof [BUFPTR(input_buffer)], BUFSIZE(input_buffer), 8
 
 .put_element_into_buffer:
     mov     r8, [rbp - 8] ; element to add
     mov     rax, [input_buffer_position]
-    mov     rcx, [input_buffer] ; base address of buffer
+    mov     rcx, [BUFPTR(input_buffer)] ; base address of buffer
     lea     r9, [rcx + rax * 8]
     inc     qword [input_buffer_position]
     mov     [r9], r8
@@ -134,9 +139,9 @@ main:
      call   printf
 
 .free_buffer:
-    mov     rdi, [frequency_buffer]
+    mov     rdi, [BUFPTR(frequency_buffer)]
     call    free
-    mov     rdi, [input_buffer]
+    mov     rdi, [BUFPTR(input_buffer)]
     call    free
 
 .exit_point:
