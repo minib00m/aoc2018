@@ -1,4 +1,5 @@
 extern realloc
+%include 'utils/buffer.asm'
 
 %macro double_buffer 1 ; ptr to buffer
     mov     rdi, [BUFPTR(%1)]
