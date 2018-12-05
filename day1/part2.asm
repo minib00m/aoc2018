@@ -1,5 +1,5 @@
 global main
-%include 'utils/double_buffer_sizeof.asm'
+%include 'utils/double_buffer.asm'
 %include 'utils/buffer.asm'
 
 extern scanf
@@ -14,12 +14,14 @@ section .data
 input_buffer istruc buffer
     at buffer.ptr, dq 0
     at buffer.size, dq 8
+    at buffer.entry_sizeof, dq 8
 iend
 input_buffer_position: dq 0
 
 frequency_buffer istruc buffer
     at buffer.ptr, dq 0
     at buffer.size, dq 8
+    at buffer.entry_sizeof, dq 8
 iend
 frequency_buffer_position: dq 0
 
@@ -65,7 +67,7 @@ process_input_buffer:
     cmovle  r12, rax ; zero our index if it's too high
 
     mov     rax, [BUFPTR(input_buffer)]
-    add     r13, [rax + r12 * 8] ; add next element to our sum
+    add     r13, [rax + r12 * 8]; add next element to our sum
     inc     r12
     mov     rdi, r13
     call    is_element_in_frequencies_buffer
@@ -78,7 +80,7 @@ process_input_buffer:
     jl      .put_element_to_frequencies_buffer
 
     ; realloc frequencies buffer
-    double_buffer_sizeof [BUFPTR(frequency_buffer)], BUFSIZE(frequency_buffer), 8
+    double_buffer frequency_buffer
 
 .put_element_to_frequencies_buffer:
     mov     rax, [frequency_buffer_position]
@@ -102,10 +104,10 @@ main:
     sub     rsp, 16 ; int64 for input, stack alignment
 
     ; initialize frequencies buffer
-    double_buffer_sizeof [BUFPTR(frequency_buffer)], BUFSIZE(frequency_buffer), 8
+    double_buffer frequency_buffer
 
     ; initialize input_buffer
-    double_buffer_sizeof [BUFPTR(input_buffer)], BUFSIZE(input_buffer), 8
+    double_buffer input_buffer
 
 .read_more:
     mov     rdi, input_int64_format
@@ -120,7 +122,7 @@ main:
     jl     .put_element_into_buffer
 
     ; relocating buffer
-    double_buffer_sizeof [BUFPTR(input_buffer)], BUFSIZE(input_buffer), 8
+    double_buffer input_buffer
 
 .put_element_into_buffer:
     mov     r8, [rbp - 8] ; element to add
