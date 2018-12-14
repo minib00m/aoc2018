@@ -68,19 +68,7 @@ static char *calculate_border_points(struct distance_cell *dc, int32_t max_x, in
     return border_point;
 }
 
-static int32_t *calculate_point_areas(struct distance_cell *dc, int32_t max_x, int32_t max_y, int32_t points_count)
-{
-    int32_t *output = calloc(points_count, sizeof(int32_t));
-    for (int32_t i = 0; i < max_x; i++) {
-        for (int32_t j = 0; j < max_y; j++) {
-            int32_t dc_idx = j * max_x + i;
-            if (dc[dc_idx].is_alone) {
-                output[dc[dc_idx].alone_id]++;
-            }
-        }
-    }
-    return output;
-}
+int32_t *calculate_point_areas(struct distance_cell *dc, int64_t all_cells, int64_t points_count);
 
 int main()
 {
@@ -136,7 +124,7 @@ int main()
         }
     }
 
-    int32_t *point_area = calculate_point_areas(dc, max_x, max_y, pb.position);
+    int32_t *point_area = calculate_point_areas(dc, max_x * max_y, pb.position);
     char *border_point = calculate_border_points(dc, max_x, max_y, pb.position);
     int32_t max_non_inf_area = 0;
     int32_t close_area = 0;

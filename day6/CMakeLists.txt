@@ -1,3 +1,3 @@
-add_executable(d6p1_and_2 part1_and_2.c)
+add_executable(d6p1_and_2 part1_and_2.c part1_and_2.asm)
 
-target_link_libraries(d6p1_and_2 PRIVATE utils_library)
+set_target_properties(d6p1_and_2 PROPERTIES LINKER_LANGUAGE NASM)
