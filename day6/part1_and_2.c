@@ -55,6 +55,29 @@ char *calculate_border_points(struct distance_cell *dc, int32_t max_x, int32_t m
 
 int32_t *calculate_point_areas(struct distance_cell *dc, int64_t all_cells, int64_t points_count);
 
+void calculate_cell_distances(struct distance_cell *dc, struct point_buffer *pb, int64_t max_x, int64_t max_y)
+{
+    for (int32_t i = 0; i < max_x; i++) {
+        for (int32_t j = 0; j < max_y; j++) {
+            for (int32_t p_idx = 0; p_idx < pb->position; p_idx++) {
+                int32_t px = pb->ptr[p_idx].x;
+                int32_t py = pb->ptr[p_idx].y;
+                int dist = abs(px - i) + abs(py - j);
+
+                int32_t dc_idx = j * max_x + i;
+                dc[dc_idx].total_distance += dist;
+                if (dc[dc_idx].min_distance > dist) {
+                    dc[dc_idx].min_distance = dist;
+                    dc[dc_idx].is_alone = 1;
+                    dc[dc_idx].alone_id = p_idx;
+                } else if (dc[dc_idx].min_distance == dist) {
+                    dc[dc_idx].is_alone = 0;
+                }
+            }
+        }
+    }
+}
+
 int main()
 {
     int32_t max_x = 0, max_y = 0;
@@ -88,26 +111,7 @@ int main()
         }
     }
 
-
-    for (int32_t i = 0; i < max_x; i++) {
-        for (int32_t j = 0; j < max_y; j++) {
-            for (int32_t p_idx = 0; p_idx < pb.position; p_idx++) {
-                int32_t px = pb.ptr[p_idx].x;
-                int32_t py = pb.ptr[p_idx].y;
-                int dist = abs(px - i) + abs(py - j);
-
-                int32_t dc_idx = j * max_x + i;
-                if (dc[dc_idx].min_distance > dist) {
-                    dc[dc_idx].min_distance = dist;
-                    dc[dc_idx].is_alone = 1;
-                    dc[dc_idx].alone_id = p_idx;
-                } else if (dc[dc_idx].min_distance == dist) {
-                    dc[dc_idx].is_alone = 0;
-                }
-                dc[dc_idx].total_distance += dist;
-            }
-        }
-    }
+    calculate_cell_distances(dc, &pb, max_x, max_y);
 
     int32_t *point_area = calculate_point_areas(dc, max_x * max_y, pb.position);
     char *border_point = calculate_border_points(dc, max_x, max_y, pb.position);
