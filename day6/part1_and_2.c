@@ -51,22 +51,7 @@ struct distance_cell
     int32_t total_distance;
 };
 
-static char *calculate_border_points(struct distance_cell *dc, int32_t max_x, int32_t max_y, int32_t points_count)
-{
-    char *border_point = calloc(points_count, sizeof(char));
-    for (int32_t i = 0; i < max_x; i++) {
-        for (int32_t j = 0; j < max_y; j++) {
-            int32_t dc_idx = j * max_x + i;
-            if (i != 0 && j != 0 && i < max_x - 1 && j < max_y - 1) {
-                continue; // not a border point
-            }
-            if (dc[dc_idx].is_alone) {
-                border_point[dc[dc_idx].alone_id] = 1;
-            }
-        }
-    }
-    return border_point;
-}
+char *calculate_border_points(struct distance_cell *dc, int32_t max_x, int32_t max_y, int32_t points_count);
 
 int32_t *calculate_point_areas(struct distance_cell *dc, int64_t all_cells, int64_t points_count);
 
