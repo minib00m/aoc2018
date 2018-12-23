@@ -5,6 +5,7 @@ extern printf
 
 ALPHABET_COUNT equ 26
 EOF equ -1
+
 section .data
 node_visited: times ALPHABET_COUNT db 0
 node_in_degree: times ALPHABET_COUNT dd 0
@@ -119,7 +120,7 @@ main:
     ; find first non visited node with zero in degree
     call        best_node_to_process
     cmp         rax, EOF
-    je          .print_result_part1
+    je          .print_result
     mov         rdi, rax
     mov         qword [rbp - 16], rax
     call        decrease_in_degree_for_neighbours
@@ -130,7 +131,7 @@ main:
     inc         qword [topological_sort_index]
     jmp         .do_topological_sort
 
-    .print_result_part1:
+    .print_result:
     mov         rdi, topologically_sorted_nodes
     mov         rsi, [topological_sort_index]
     call        print_byte_array_as_A_Z_range
