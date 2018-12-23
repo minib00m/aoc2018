@@ -14,8 +14,6 @@ topological_sort_index: dq 0
 is_node_present: times ALPHABET_COUNT db 0
 
 INPUT_FORMAT: db "Step %c must be finished before step %c can begin.", 10, 0
-SHOW_FORMAT: db "Best node to process: %c", 10, 0
-DEBUG_FORMAT: db "Elo witam", 10, 0
 
 PRINT_BYTE: db "%c", 0
 
