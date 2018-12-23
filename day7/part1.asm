@@ -29,7 +29,7 @@ print_byte_array_as_A_Z_range: ; address to byte array, size of byte array
     cmp         rbx, rbp
     je          .exit_point
 
-.print_byte:
+    .print_byte:
     mov         rdi, PRINT_BYTE
     movsx       rsi, byte [rbx]
     add         rsi, 'A'
@@ -39,7 +39,7 @@ print_byte_array_as_A_Z_range: ; address to byte array, size of byte array
     cmp         rbx, rbp
     jne         .print_byte
 
-.exit_point:
+    .exit_point:
     add         rsp, 8
     pop         rbx
     pop         rbp
@@ -51,12 +51,12 @@ decrease_in_degree_for_neighbours: ; node
     imul        rax, rdi, ALPHABET_COUNT
     lea         rdi, [node_matrix + rax]
     xor         rsi, rsi
-.check_if_edge_exists:
+    .check_if_edge_exists:
     cmp         byte [rdi + rsi], 0
     je          .prepare_next_node_to_check
     dec         byte [node_in_degree + rsi]
 
-.prepare_next_node_to_check:
+    .prepare_next_node_to_check:
     inc         rsi
     cmp         rsi, ALPHABET_COUNT
     jne          .check_if_edge_exists
@@ -65,7 +65,7 @@ decrease_in_degree_for_neighbours: ; node
 
 best_node_to_process: ; returns -1 if there is no node to process
     xor         rax, rax
-.check_if_good_node:
+    .check_if_good_node:
     cmp         byte [node_visited + rax], 0
     jne         .prepare_next_node_to_check
 
@@ -76,7 +76,7 @@ best_node_to_process: ; returns -1 if there is no node to process
     jne         .prepare_next_node_to_check
     ret
 
-.prepare_next_node_to_check:
+    .prepare_next_node_to_check:
     inc         rax
     cmp         rax, ALPHABET_COUNT
     jl          .check_if_good_node
@@ -88,7 +88,7 @@ main:
     mov         rbp, rsp
     sub         rsp, 16 ; byte for keeping current node, byte for from node, byte for to node, stack alignment
 
-.read_next_line:
+    .read_next_line:
     mov         rdi, INPUT_FORMAT
     lea         rsi, [rbp - 1]
     lea         rdx, [rbp - 2]
@@ -115,7 +115,7 @@ main:
 
     jmp         .read_next_line
 
-.do_topological_sort:
+    .do_topological_sort:
     ; find first non visited node with zero in degree
     call        best_node_to_process
     cmp         rax, EOF
@@ -130,7 +130,7 @@ main:
     inc         qword [topological_sort_index]
     jmp         .do_topological_sort
 
-.print_result_part1:
+    .print_result_part1:
     mov         rdi, topologically_sorted_nodes
     mov         rsi, [topological_sort_index]
     call        print_byte_array_as_A_Z_range
