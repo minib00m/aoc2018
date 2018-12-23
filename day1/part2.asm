@@ -1,6 +1,5 @@
 global main
 %include 'utils/double_buffer.asm'
-%include 'utils/buffer.asm'
 
 extern scanf
 extern printf
