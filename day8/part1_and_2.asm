@@ -7,7 +7,7 @@ extern free
 
 section .data
 INT64_INPUT: db "%ld", 0
-INT64_OUTPUT: db "%ld", 10, 0
+PART_OUTPUT: db "Part: %d, answer: %ld", 10, 0
 
 section .text
 calculate_licence_sum:
@@ -94,13 +94,15 @@ main:
 
     call        calculate_licence_sum
     mov         qword [rbp - 16], rcx
-    mov         rdi, INT64_OUTPUT
-    mov         rsi, rax
+    mov         rdi, PART_OUTPUT
+    mov         rsi, 1
+    mov         rdx, rax
     mov         eax, 0
     call        printf
 
-    mov         rdi, INT64_INPUT
-    mov         rsi, qword [rbp - 16]
+    mov         rdi, PART_OUTPUT
+    mov         rsi, 2
+    mov         rdx, qword [rbp - 16]
     mov         eax, 0
     call        printf
 
