@@ -9,53 +9,13 @@ struct marble_node
     int64_t value;
 };
 
-struct marble_node *create_first_two_marbles()
-{
-    struct marble_node *marble1 = malloc(sizeof(struct marble_node));
-    struct marble_node *marble2 = malloc(sizeof(struct marble_node));
-    marble1->next = marble2;
-    marble1->prev = marble2;
-    marble1->value = 0;
-    marble2->next = marble1;
-    marble2->prev = marble1;
-    marble2->value = 1;
-    return marble2;
-}
+struct marble_node *create_first_two_marbles();
 
-struct marble_node *insert_marble_after(struct marble_node *marble, int64_t new_value)
-{
-    struct marble_node *new_marble = malloc(sizeof(struct marble_node));
-    new_marble->next = marble->next;
-    new_marble->prev = marble;
-    new_marble->value = new_value;
-    marble->next->prev = new_marble;
-    marble->next = new_marble;
-    return new_marble;
-}
+struct marble_node *insert_marble_after(struct marble_node *marble, int64_t new_value);
 
-void destroy_marbles(struct marble_node *head)
-{
-    struct marble_node *next_node;
-    head->prev->next = NULL; // break the cycle
-    while (head->next != NULL) {
-        next_node = head->next;
-        free(head);
-        head = next_node;
-    }
-    free(head);
-}
+void destroy_marbles(struct marble_node *head);
 
-int64_t remove_marble_at(struct marble_node **remove_head)
-{
-    struct marble_node *head = *remove_head;
-    head->next->prev = head->prev;
-    head->prev->next = head->next;
-    int64_t removed_value = head->value;
-    struct marble_node *new_head = head->next;
-    free(head);
-    *remove_head = new_head;
-    return removed_value;
-}
+int64_t remove_marble_at(struct marble_node **remove_head);
 
 int64_t calculate_winning_score(int64_t no_players, int64_t last_marble)
 {
@@ -78,6 +38,7 @@ int64_t calculate_winning_score(int64_t no_players, int64_t last_marble)
     for (int64_t i = 0; i < no_players; i++) {
         max_score = max_score > scores[i] ? max_score : scores[i];
     }
+
     destroy_marbles(marble_head);
     free(scores);
     return max_score;
