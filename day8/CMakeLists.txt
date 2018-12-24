@@ -1,3 +1,3 @@
-add_executable(d8p1 part1.asm)
+add_executable(d8p1_and_2 part1_and_2.asm)
 
-set_target_properties(d8p1 PROPERTIES LINKER_LANGUAGE NASM)
+set_target_properties(d8p1_and_2 PROPERTIES LINKER_LANGUAGE NASM)
